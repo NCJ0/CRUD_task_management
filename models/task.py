@@ -61,8 +61,8 @@ class Task(Base):
         return users.first()
 
     @classmethod
-    async def get(cls, db, task_id) -> "Task":
-        query = sql.select(cls).where(cls.task_id == task_id)
+    async def get(cls, db, **kwargs) -> "Task":
+        query = sql.select(cls).where(**kwargs)
         users = await db.execute(query)
         (user,) = users.first()
         return user
