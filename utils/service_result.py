@@ -6,7 +6,6 @@ from enum import Enum
 from utils.app_exceptions import AppExceptionCase
 
 
-
 class ResponseCode(Enum):
     SUCCESS = "0000"
     FAILED = "9999"

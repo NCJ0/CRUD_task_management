@@ -31,7 +31,7 @@ class AppException(object):
             """
             Tasks not found
             """
-            status_code = 404
+            status_code = "10001"
             AppExceptionCase.__init__(self, status_code, context)
 
     class CreateTask(AppExceptionCase):
@@ -39,6 +39,6 @@ class AppException(object):
             """
             Failed to create task
             """
-            status_code = 500
+            status_code = "10002"
             AppExceptionCase.__init__(self, status_code, context)
 
