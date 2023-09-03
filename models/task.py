@@ -8,7 +8,7 @@ from config.db import Base
 
 
 class Task(Base):
-    __tablename__ = "task"
+    __tablename__ = "tasks"
     task_id = Column(String, primary_key=True)
     user_id = Column(String)
     title = Column(String)
