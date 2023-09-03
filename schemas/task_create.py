@@ -12,7 +12,6 @@ class TaskCreateSchema(BaseModel):
     status: str
     created_by: str
 
-
     @field_validator('due_date', mode="before")
     def string_due_date_to_datetime(cls, v: object) -> object:
         if isinstance(v, str):
