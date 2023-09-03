@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 
@@ -11,6 +11,7 @@ from config.db import db
 
 from schemas.task_create import TaskCreateSchema
 from schemas.task_update import TaskUpdateSchema
+from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
 from utils.app_exceptions import AppException
 from utils.service_result import ServiceResult
 from utils.service_result import handle_result
@@ -97,3 +98,41 @@ async def delete_user(
         return ServiceResult(AppException.DeleteTask(delete_task))
     result = ServiceResult(delete_task.model_dump())
     return result
+
+
+@task_api.get("/search_by_criteria/")
+async def get_all_tasks(
+        task_id: Optional[str] = None,
+        title: Optional[str] = None,
+        user_id: Optional[str] = None,
+        due_date: Optional[str] = None,
+        status: Optional[str] = None,
+        created_by: Optional[str] = None,
+        updated_by: Optional[str] = None,
+        db_session=Depends(db.get_db)):
+    criteria = TaskSearchByCriteriaSchema(
+        task_id=task_id,
+        title=title,
+        user_id=user_id,
+        due_date=due_date,
+        status=status,
+        created_by=created_by,
+        updated_by=updated_by
+    )
+    tasks = await Task.get(db_session, criteria)
+    tasks_list = [GetAllItemResponse(
+        task_id=task.task_id,
+        user_id=task.user_id,
+        title=task.title,
+        description=task.description,
+        due_date=task.due_date,
+        status=task.status,
+        created_at=task.created_at,
+        created_by=task.created_by,
+        updated_at=task.updated_at,
+        updated_by=task.updated_by
+    ).model_dump() for task in tasks]
+    if not tasks:
+        return ServiceResult(AppException.GetTaskByCriteria(tasks))
+    result = ServiceResult(tasks_list)
+    return handle_result(result)

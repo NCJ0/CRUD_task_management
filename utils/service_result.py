@@ -7,8 +7,8 @@ from utils.app_exceptions import AppExceptionCase
 
 
 class ResponseCode(Enum):
-    SUCCESS = "0000"
-    FAILED = "9999"
+    SUCCESS = "10000"
+    FAILED = "99999"
 
 
 class ServiceResult(object):
