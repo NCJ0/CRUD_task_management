@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from models.task import Task
+from models.responses.create_item import CreateItemResponse
 from config.db import db
 
 from schemas.task import TaskCreateSchema
@@ -37,12 +38,13 @@ async def create_task(
 ):
     print('task.model_dump()', task.model_dump())
     task = await (Task.create(db_session, **task.model_dump()))
-    task = tuple(task)
-    print('type task', type(task))
+    print('type1 task', type(task))
+    task = CreateItemResponse(task_id=task[0], title=task[1])
+    print('type2 task', type(task))
     if not task:
         print('here1')
         return ServiceResult(AppException.CreateTask(task))
-    print('here2')
-    result = ServiceResult(task)
+    print('here2', task)
+    result = ServiceResult(task.model_dump())
     print('result', result)
     return handle_result(result)
