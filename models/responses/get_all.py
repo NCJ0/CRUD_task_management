@@ -1,20 +1,21 @@
 from pydantic import BaseModel, field_validator
 from datetime import datetime
+from typing import Optional
 
 from constants.datetime import DateTimeConstant
 
 
 class GetAllItemResponse(BaseModel):
     task_id: str
-    user_id: str
-    title: str
-    description: str
-    due_date: str
-    status: str
-    created_at: str
-    created_by: str
-    updated_at: str
-    updated_by: str
+    user_id: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    due_date: Optional[str] = None
+    status: Optional[str] = None
+    created_at: Optional[str] = None
+    created_by: Optional[str] = None
+    updated_at: Optional[str] = None
+    updated_by: Optional[str] = None
 
 
     @field_validator('due_date', mode="before")
