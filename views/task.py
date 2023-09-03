@@ -36,15 +36,9 @@ async def create_task(
         task: TaskCreateSchema,
         db_session=Depends(db.get_db)
 ):
-    print('task.model_dump()', task.model_dump())
     task = await (Task.create(db_session, **task.model_dump()))
-    print('type1 task', type(task))
     task = CreateItemResponse(task_id=task[0], title=task[1])
-    print('type2 task', type(task))
     if not task:
-        print('here1')
         return ServiceResult(AppException.CreateTask(task))
-    print('here2', task)
     result = ServiceResult(task.model_dump())
-    print('result', result)
     return handle_result(result)

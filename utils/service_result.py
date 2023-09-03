@@ -52,6 +52,5 @@ def handle_result(result: ServiceResult):
             logger.error(f"{exception} | caller={caller_info()}")
             raise exception
     resp = {"code": result.status_code, "description": result.exception_case, "data": result.value}
-    print('result service_result', result.value)
     return JSONResponse(content=resp, status_code=200)
 
