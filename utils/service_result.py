@@ -1,7 +1,15 @@
 from loguru import logger
 import inspect
+from starlette.responses import JSONResponse
+from enum import Enum
 
 from utils.app_exceptions import AppExceptionCase
+
+
+
+class ResponseCode(Enum):
+    SUCCESS = "0000"
+    FAILED = "9999"
 
 
 class ServiceResult(object):
@@ -9,16 +17,16 @@ class ServiceResult(object):
         if isinstance(arg, AppExceptionCase):
             self.success = False
             self.exception_case = arg.exception_case
-            self.status_code = arg.status_code
+            self.status_code = ResponseCode.FAILED.value
         else:
             self.success = True
             self.exception_case = None
-            self.status_code = None
+            self.status_code = ResponseCode.SUCCESS.value
         self.value = arg
 
     def __str__(self):
         if self.success:
-            return "[Success]"
+            return f"code: {self.status_code}, description: {self.exception_case}, data: {self.value}"
         return f'[Exception] "{self.exception_case}"'
 
     def __repr__(self):
@@ -43,5 +51,6 @@ def handle_result(result: ServiceResult):
         with result as exception:
             logger.error(f"{exception} | caller={caller_info()}")
             raise exception
-    with result as result:
-        return result
+    resp = {"code": result.status_code, "description": result.exception_case, "data": result.value}
+    return JSONResponse(content=resp, status_code=200)
+

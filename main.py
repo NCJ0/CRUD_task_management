@@ -26,6 +26,7 @@ def init_app():
 
     app.include_router(
         task_api,
+        prefix="/api"
     )
 
     return app
