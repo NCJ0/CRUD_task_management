@@ -8,7 +8,7 @@ from config.db import Base
 
 
 class Task(Base):
-    __tablename__ = "tasks"
+    __tablename__ = "task"
     task_id = Column(String, primary_key=True)
     user_id = Column(String)
     title = Column(String)
@@ -40,7 +40,7 @@ class Task(Base):
     async def create(cls, db, **kwargs) -> "Task":
         query = (
             sql.insert(cls)
-            .values(id=str(uuid4()), **kwargs)
+            .values(task_id=str(uuid4()), **kwargs)
             .returning(cls.task_id, cls.title)
         )
         users = await db.execute(query)

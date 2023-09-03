@@ -26,10 +26,19 @@ async def app_exception_handler(exc: AppExceptionCase):
 
 
 class AppException(object):
-    class TaskGetAllItem(AppExceptionCase):
+    class GetAllTask(AppExceptionCase):
         def __init__(self, context: dict = None):
             """
             Tasks not found
             """
             status_code = 404
             AppExceptionCase.__init__(self, status_code, context)
+
+    class CreateTask(AppExceptionCase):
+        def __init__(self, context: dict = None):
+            """
+            Failed to create task
+            """
+            status_code = 500
+            AppExceptionCase.__init__(self, status_code, context)
+
