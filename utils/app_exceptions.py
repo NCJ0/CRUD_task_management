@@ -70,3 +70,11 @@ class AppException(object):
             status_code = 10005
             AppExceptionCase.__init__(self, status_code, context)
 
+    class GetAllTaskHistory(AppExceptionCase):
+        def __init__(self, context: GetAllItemResponse = None):
+            """
+            Tasks history not found
+            """
+            status_code = 10006
+            AppExceptionCase.__init__(self, status_code, context)
+
