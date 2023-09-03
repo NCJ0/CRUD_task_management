@@ -10,15 +10,15 @@ from config.db import Base
 class Task(Base):
     __tablename__ = "task"
     task_id = Column(String, primary_key=True)
-    user_id = Column(String)
-    title = Column(String)
-    description = Column(String)
-    due_date = Column(DateTime, index=True)
-    status = Column(String)
-    created_at = Column(DateTime, index=True, default=datetime.utcnow)
-    created_by = Column(String)
-    updated_at = Column(DateTime, index=True, default=datetime.utcnow)
-    updated_by = Column(String)
+    user_id = Column(String, default=None)
+    title = Column(String, default=None)
+    description = Column(String, default=None)
+    due_date = Column(DateTime, index=True, default=None)
+    status = Column(String, default=None)
+    created_at = Column(DateTime, index=True, default=None)
+    created_by = Column(String, default=None)
+    updated_at = Column(DateTime, index=True, default=None)
+    updated_by = Column(String, default=None)
 
     def __repr__(self):
         return (
@@ -40,7 +40,7 @@ class Task(Base):
     async def create(cls, db, **kwargs) -> "Task":
         query = (
             sql.insert(cls)
-            .values(task_id=str(uuid4()), **kwargs)
+            .values(task_id=str(uuid4()), created_at=datetime.utcnow(), updated_by=kwargs['created_by'], updated_at=datetime.utcnow(), **kwargs)
             .returning(cls.task_id, cls.title)
         )
         users = await db.execute(query)
@@ -52,9 +52,9 @@ class Task(Base):
         query = (
             sql.update(cls)
             .where(cls.task_id == task_id)
-            .values(**kwargs)
+            .values(updated_at=datetime.utcnow(), **kwargs)
             .execution_options(synchronize_session="fetch")
-            .returning(cls.task_id, cls.title)
+            .returning(cls.task_id, cls.user_id, cls.title, cls.description, cls.due_date, cls.status, cls.created_at, cls.created_by, cls.updated_at, cls.updated_by)
         )
         users = await db.execute(query)
         await db.commit()

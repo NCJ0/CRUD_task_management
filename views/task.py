@@ -4,10 +4,12 @@ from fastapi import APIRouter, Depends
 
 from models.task import Task
 from models.responses.create_item import CreateItemResponse
+from models.responses.update_item import UpdateItemResponse
 from models.responses.get_all import GetAllItemResponse
 from config.db import db
 
-from schemas.task import TaskCreateSchema
+from schemas.task_create import TaskCreateSchema
+from schemas.task_update import TaskUpdateSchema
 from utils.app_exceptions import AppException
 from utils.service_result import ServiceResult
 from utils.service_result import handle_result
@@ -50,8 +52,32 @@ async def create_task(
         db_session=Depends(db.get_db)
 ):
     task = await (Task.create(db_session, **task.model_dump()))
-    task = CreateItemResponse(task_id=task[0], title=task[1])
-    if not task:
-        return ServiceResult(AppException.CreateTask(task))
-    result = ServiceResult(task.model_dump())
+    new_task = CreateItemResponse(task_id=task.task_id, title=task.title)
+    if not new_task:
+        return ServiceResult(AppException.CreateTask(new_task))
+    result = ServiceResult(new_task.model_dump())
+    return handle_result(result)
+
+
+@task_api.patch("/{task_id}")
+async def update(
+        task_id: str,
+        task: TaskUpdateSchema,
+        db_session=Depends(db.get_db)
+):
+    task = await Task.update(db_session, task_id, **task.model_dump())
+    updated_task = UpdateItemResponse(
+        task_id=task.task_id,
+        user_id=task.user_id,
+        title=task.title,
+        description=task.description,
+        due_date=task.due_date,
+        status=task.status,
+        created_at=task.created_at,
+        created_by=task.created_by,
+        updated_at=task.updated_at,
+        updated_by=task.updated_by)
+    if not updated_task:
+        return ServiceResult(AppException.CreateTask(updated_task))
+    result = ServiceResult(updated_task.model_dump())
     return handle_result(result)
