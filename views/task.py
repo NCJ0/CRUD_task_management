@@ -6,6 +6,7 @@ from models.task import Task
 from models.responses.create_item import CreateItemResponse
 from models.responses.update_item import UpdateItemResponse
 from models.responses.get_all import GetAllItemResponse
+from models.responses.delete_item import DeleteItemResponse
 from config.db import db
 
 from schemas.task_create import TaskCreateSchema
@@ -78,6 +79,21 @@ async def update(
         updated_at=task.updated_at,
         updated_by=task.updated_by)
     if not updated_task:
-        return ServiceResult(AppException.CreateTask(updated_task))
+        return ServiceResult(AppException.UpdateTask(updated_task))
     result = ServiceResult(updated_task.model_dump())
     return handle_result(result)
+
+
+@task_api.delete("/{task_id}")
+async def delete_user(
+        task_id: str,
+        db_session=Depends(db.get_db)
+):
+    is_delete_success = await Task.delete(db_session, task_id)
+    delete_task = DeleteItemResponse(
+        is_delete_success=is_delete_success
+    )
+    if not is_delete_success:
+        return ServiceResult(AppException.DeleteTask(delete_task))
+    result = ServiceResult(delete_task.model_dump())
+    return result
