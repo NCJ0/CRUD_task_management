@@ -5,6 +5,7 @@ from sqlalchemy import Column, DateTime, String
 from sqlalchemy.sql import expression as sql
 
 from config.db import Base
+from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
 
 
 class Task(Base):
@@ -61,11 +62,12 @@ class Task(Base):
         return users.first()
 
     @classmethod
-    async def get(cls, db, **kwargs) -> "Task":
-        query = sql.select(cls).where(**kwargs)
+    async def get(cls, db, criteria: TaskSearchByCriteriaSchema) -> list["Task"]:
+        query = sql.select(cls)
+        query = _filter_by_criteria(cls, query, criteria)
         users = await db.execute(query)
-        (user,) = users.first()
-        return user
+        users = users.scalars().all()
+        return users
 
     @classmethod
     async def get_all(cls, db) -> list["Task"]:
@@ -87,3 +89,21 @@ class Task(Base):
         await db.execute(query)
         await db.commit()
         return True
+
+
+def _filter_by_criteria(cls, query, criteria: TaskSearchByCriteriaSchema):
+    if criteria.task_id:
+        query = query.filter(cls.task_id == criteria.task_id)
+    if criteria.title:
+        query = query.filter(cls.title == criteria.title)
+    if criteria.user_id:
+        query = query.filter(cls.user_id == criteria.user_id)
+    if criteria.due_date:
+        query = query.filter(cls.due_date == criteria.title)
+    if criteria.status:
+        query = query.filter(cls.status == criteria.status)
+    if criteria.created_by:
+        query = query.filter(cls.created_by == criteria.created_by)
+    if criteria.updated_by:
+        query = query.filter(cls.updated_by == criteria.updated_by)
+    return query
