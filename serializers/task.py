@@ -9,7 +9,7 @@ class Status(str, Enum):
     COMPLETED = "completed"
 
 
-class UserSerializer(BaseModel):
+class TaskSerializer(BaseModel):
     task_id: str
     user_id: str
     title: str
