@@ -43,15 +43,15 @@ poetry run uvicorn main:app --reload
 ```url
 http://127.0.0.1:8000/docs
 ```
+For More Detail, please refer to this APIdocs:
+```
+https://illustrious-cheque-071.notion.site/API-Reference-bec1b71e41df4c3b8a57d3f34996e2f7?pvs=4
+```
 
 
 
 ## Usage
 
-I would have write a data populate script, but with the current state, it would require you to create new tasks several time via CREATE endpoint.
+I would have write a data populate script, but with the current state, it would require you to create new tasks several time via CREATE endpoint. After several Tasks are created, we can use other endpoints to interact.
 
-Please refer to this API docs for more detail:
-```
-https://illustrious-cheque-071.notion.site/API-Reference-bec1b71e41df4c3b8a57d3f34996e2f7?pvs=4
-```
 
