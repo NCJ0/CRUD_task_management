@@ -2,7 +2,7 @@ from schemas.task_update import TaskUpdateSchema
 
 from models.task import Task
 
-from models.responses.update_item import UpdateItemResponse
+from models.responses.update_task import UpdateItemResponse
 
 
 async def update_task_service(db_session, task: TaskUpdateSchema):

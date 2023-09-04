@@ -16,9 +16,6 @@ from services.create_task_service import create_task_service
 
 async def undo_task_action(db_session, tasks_history: [TaskHistory]):
     latest_task = tasks_history[0]
-    archive_task_history = GetAllHistoryResponse(
-        task_history_id=latest_task.task_history_id,
-    )
     if latest_task.action_type == ActionType.CREATE.value:
         is_success, result = await delete_task_service(db_session, latest_task.task_id)
 

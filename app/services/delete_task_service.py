@@ -1,6 +1,6 @@
 from models.task import Task
 
-from models.responses.delete_item import DeleteItemResponse
+from models.responses.delete_task import DeleteItemResponse
 
 
 async def delete_task_service(db_session, task_id: str):

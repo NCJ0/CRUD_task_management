@@ -1,6 +1,6 @@
 from models.task import Task
 
-from models.responses.get_all import GetAllItemResponse
+from models.responses.get_all_task import GetAllItemResponse
 
 
 async def get_all_task_service(db_session):

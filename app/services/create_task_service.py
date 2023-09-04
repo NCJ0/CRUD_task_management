@@ -2,7 +2,7 @@ from schemas.task_create import TaskCreateSchema
 
 from models.task import Task
 
-from models.responses.create_item import CreateItemResponse
+from models.responses.create_task import CreateItemResponse
 
 
 async def create_task_service(db_session, task: TaskCreateSchema):

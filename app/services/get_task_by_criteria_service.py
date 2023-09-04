@@ -2,7 +2,7 @@ from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
 
 from models.task import Task
 
-from models.responses.get_all import GetAllItemResponse
+from models.responses.get_all_task import GetAllItemResponse
 
 
 async def get_task_by_criteria_service(db_session, criteria: TaskSearchByCriteriaSchema):
