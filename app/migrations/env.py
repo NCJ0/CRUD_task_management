@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from models import task
-from models import task_history
-from config.config import Config
+from app.models import task
+from app.models import task_history
+from app.config.config import Config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

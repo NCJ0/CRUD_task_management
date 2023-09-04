@@ -120,6 +120,6 @@ def _filter_by_criteria(cls, query, criteria: TaskHistorySearchByCriteriaSchema)
         query = query.filter(cls.action_type == criteria.action_type)
     if criteria.logged_at:
         query = query.filter(cls.logged_at == criteria.logged_at)
-    if criteria.is_archived:
+    if criteria.is_archived is not None:
         query = query.filter(cls.is_archived == criteria.is_archived)
     return query

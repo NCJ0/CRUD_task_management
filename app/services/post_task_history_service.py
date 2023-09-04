@@ -1,5 +1,4 @@
 from models.task_history import TaskHistory
-from models.task import Task
 from constants.action_type_constant import ActionType
 
 from schemas.task_log import TaskLogSchema

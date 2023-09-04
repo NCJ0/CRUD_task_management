@@ -17,7 +17,6 @@ class GetAllItemResponse(BaseModel):
     updated_at: Optional[str] = None
     updated_by: Optional[str] = None
 
-
     @field_validator('due_date', mode="before")
     def string_due_date_to_datetime(cls, v: object) -> object:
         if isinstance(v, datetime):
