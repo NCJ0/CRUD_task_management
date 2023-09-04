@@ -43,7 +43,7 @@ poetry run uvicorn main:app --reload
 ```url
 http://127.0.0.1:8000/docs
 ```
-For More Detail, please refer to this APIdocs:
+For More Detail, please refer to this API docs:
 ```
 https://illustrious-cheque-071.notion.site/API-Reference-bec1b71e41df4c3b8a57d3f34996e2f7?pvs=4
 ```
