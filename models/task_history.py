@@ -5,12 +5,13 @@ from sqlalchemy import Column, DateTime, String, Boolean, desc
 from sqlalchemy.sql import expression as sql
 
 from config.db import Base
-from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
+from schemas.task_history_search_by_criteria import TaskHistorySearchByCriteriaSchema
 
 
 class TaskHistory(Base):
     __tablename__ = "task_history"
-    task_id = Column(String, primary_key=True)
+    task_history_id = Column(String, primary_key=True)
+    task_id = Column(String)
     action_type = Column(String, default=None)
     user_id = Column(String, default=None)
     title = Column(String, default=None)
@@ -27,6 +28,7 @@ class TaskHistory(Base):
     def __repr__(self):
         return (
             f"<{self.__class__.__name__}("
+            f"task_history_id={self.task_history_id}, "
             f"task_id={self.task_id}, "
             f"action_type={self.task_id}, "
             f"user_id={self.user_id}, "
@@ -47,18 +49,18 @@ class TaskHistory(Base):
     async def create(cls, db, task_id, action_type, **kwargs) -> "TaskHistory":
         query = (
             sql.insert(cls)
-            .values(task_id=task_id, action_type=action_type, logged_at=datetime.utcnow(), **kwargs)
+            .values(task_history_id=str(uuid4()), task_id=task_id, action_type=action_type, logged_at=datetime.utcnow(), **kwargs)
             .returning(cls.task_id)
         )
         tasks = await db.execute(query)
         await db.commit()
         return tasks.first()
 
-    async def update(cls, db, task_id, **kwargs) -> "TaskHistory":
+    async def update(cls, db, task_history_id, **kwargs) -> "TaskHistory":
         query = (
             sql.update(cls)
-            .where(cls.task_id == task_id)
-            .values(logged_at=datetime.utcnow(), **kwargs)
+            .where(cls.task_history_id == task_history_id)
+            .values(**kwargs)
             .execution_options(synchronize_session="fetch")
             .returning(cls.task_id, cls.user_id, cls.title, cls.description, cls.due_date, cls.status, cls.created_at, cls.created_by, cls.updated_at, cls.updated_by)
         )
@@ -67,10 +69,10 @@ class TaskHistory(Base):
         return tasks.first()
 
     @classmethod
-    async def get(cls, db, criteria: TaskSearchByCriteriaSchema) -> list["TaskHistory"]:
+    async def get(cls, db, criteria: TaskHistorySearchByCriteriaSchema) -> list["TaskHistory"]:
         query = sql.select(cls)
         query = _filter_by_criteria(cls, query, criteria)
-        query = query.order_by(desc(cls.logged_at)).limit(10).all()
+        query = query.order_by(desc(cls.logged_at)).limit(10)
         tasks = await db.execute(query)
         tasks = tasks.scalars().all()
         return tasks
@@ -98,7 +100,7 @@ class TaskHistory(Base):
         return True
 
 
-def _filter_by_criteria(cls, query, criteria: TaskSearchByCriteriaSchema):
+def _filter_by_criteria(cls, query, criteria: TaskHistorySearchByCriteriaSchema):
     if criteria.task_id:
         query = query.filter(cls.task_id == criteria.task_id)
     if criteria.title:

@@ -9,7 +9,6 @@ class TaskCreateSchema(BaseModel):
     description: Optional[str] = ""
     due_date: datetime
     status: Optional[str] = ""
-    status: str
     created_by: str
 
     @field_validator('due_date', mode="before")

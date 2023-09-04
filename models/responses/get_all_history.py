@@ -6,6 +6,7 @@ from constants.datetime import DateTimeConstant
 
 
 class GetAllHistoryResponse(BaseModel):
+    task_history_id: str
     task_id: str
     user_id: Optional[str] = None
     action_type: Optional[str] = None

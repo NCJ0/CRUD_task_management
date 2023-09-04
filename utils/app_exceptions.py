@@ -4,6 +4,7 @@ from models.responses.create_item import CreateItemResponse
 from models.responses.update_item import UpdateItemResponse
 from models.responses.get_all import GetAllItemResponse
 from models.responses.delete_item import DeleteItemResponse
+from models.responses.get_all_history import GetAllHistoryResponse
 
 
 class AppExceptionCase(Exception):
@@ -31,7 +32,7 @@ async def app_exception_handler(exc: AppExceptionCase):
 
 class AppException(object):
     class GetAllTask(AppExceptionCase):
-        def __init__(self, context: GetAllItemResponse = None):
+        def __init__(self, context: [GetAllItemResponse] = None):
             """
             Tasks not found
             """
@@ -63,7 +64,7 @@ class AppException(object):
             AppExceptionCase.__init__(self, status_code, context)
 
     class GetTaskByCriteria(AppExceptionCase):
-        def __init__(self, context: GetAllItemResponse = None):
+        def __init__(self, context: [GetAllItemResponse] = None):
             """
             Task not found
             """
@@ -71,10 +72,17 @@ class AppException(object):
             AppExceptionCase.__init__(self, status_code, context)
 
     class GetAllTaskHistory(AppExceptionCase):
-        def __init__(self, context: GetAllItemResponse = None):
+        def __init__(self, context: [GetAllHistoryResponse] = None):
             """
             Tasks history not found
             """
             status_code = 10006
             AppExceptionCase.__init__(self, status_code, context)
 
+    class UndoLastAction(AppExceptionCase):
+        def __init__(self, context: GetAllHistoryResponse = None):
+            """
+            Failed to undo action
+            """
+            status_code = 10007
+            AppExceptionCase.__init__(self, status_code, context)

@@ -5,22 +5,15 @@ from constants.action_type import ActionType
 from schemas.task_log import TaskLogSchema
 from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
 
-
-async def save_action_log_item_create(db, task_id):
-    action_type = ActionType.CREATE.value
-    return await TaskHistory.create(db, task_id, action_type)
+from services.get_task_by_criteria_service import get_task_by_criteria_service
 
 
-async def save_action_log_item_update(db, task_id, **kwargs):
-    action_type = ActionType.UPDATE.value
-    return await TaskHistory.create(db, task_id, action_type, **kwargs)
-
-
-async def save_action_log_item_delete(db, task_id):
+async def post_task_history_service(db_session, task_id, mode: ActionType):
     criteria = TaskSearchByCriteriaSchema(
         task_id=task_id
     )
-    tasks = await Task.get(db, criteria)
+    _, tasks = await get_task_by_criteria_service(db_session, criteria)
+    print('tasks[0]', tasks[0])
     task = tasks[0]
     log_task = TaskLogSchema(
         user_id=task.user_id,
@@ -33,5 +26,8 @@ async def save_action_log_item_delete(db, task_id):
         updated_at=task.updated_at,
         updated_by=task.updated_by,
     )
-    action_type = ActionType.DELETE.value
-    return await TaskHistory.create(db, task_id, action_type, **log_task.model_dump())
+    action_type = mode.value
+    result = await TaskHistory.create(db_session, task_id, action_type, **log_task.model_dump())
+    # save log result via pub/sub
+    return result
+
