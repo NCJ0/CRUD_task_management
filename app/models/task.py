@@ -10,7 +10,7 @@ from schemas.task_search_by_criteria import TaskSearchByCriteriaSchema
 
 class Task(Base):
     __tablename__ = "task"
-    task_id = Column(String, primary_key=True)
+    task_id = Column(String, primary_key=True, index=True)
     user_id = Column(String, default=None)
     title = Column(String, default=None)
     description = Column(String, default=None)
