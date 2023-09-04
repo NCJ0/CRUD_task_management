@@ -2,13 +2,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 
-from models.task import Task
-from models.task_history import TaskHistory
-from models.responses.create_item import CreateItemResponse
-from models.responses.update_item import UpdateItemResponse
-from models.responses.get_all import GetAllItemResponse
-from models.responses.get_all_history import GetAllHistoryResponse
-from models.responses.delete_item import DeleteItemResponse
 from config.db import db
 from services.post_task_history_service import post_task_history_service
 from services.undo_action_service import undo_task_action
@@ -20,7 +13,7 @@ from schemas.task_history_search_by_criteria import TaskHistorySearchByCriteriaS
 
 from utils.app_exceptions import AppException
 from utils.service_result import ServiceResult
-from utils.service_result import handle_result
+from utils.service_result import handle_response
 from constants.action_type_constant import ActionType
 
 from services.update_task_service import update_task_service
@@ -44,9 +37,9 @@ async def get_all_tasks(db_session=Depends(db.get_db)):
     is_success, tasks = await get_all_task_service(db_session)
     tasks_list = [task.model_dump() for task in tasks]
     if not tasks:
-        return ServiceResult(AppException.GetAllTask(tasks_list))
+        return ServiceResult(AppException.FailedToGetAllTask(tasks_list))
     result = ServiceResult(tasks_list)
-    return handle_result(result)
+    return handle_response(result)
 
 
 @task_api.post("/")
@@ -57,9 +50,9 @@ async def create_task(
     is_success, new_task = await create_task_service(db_session, task)
     await post_task_history_service(db_session, new_task.task_id, ActionType.CREATE)
     if not is_success:
-        return ServiceResult(AppException.CreateTask(new_task))
+        return ServiceResult(AppException.FailedToCreateTask(new_task))
     result = ServiceResult(new_task.model_dump())
-    return handle_result(result)
+    return handle_response(result)
 
 
 @task_api.patch("/")
@@ -71,9 +64,9 @@ async def patch_task(
     await post_task_history_service(db_session, task_id, ActionType.UPDATE)
     is_success, updated_task = await update_task_service(db_session, task)
     if not is_success:
-        return ServiceResult(AppException.UpdateTask(updated_task))
+        return ServiceResult(AppException.FailedToUpdateTask(updated_task))
     result = ServiceResult(updated_task.model_dump())
-    return handle_result(result)
+    return handle_response(result)
 
 
 @task_api.delete("/{task_id}")
@@ -84,9 +77,9 @@ async def delete_task(
     await post_task_history_service(db_session, task_id, ActionType.DELETE)
     is_delete_success, deleted_task = await delete_task_service(db_session, task_id)
     if not is_delete_success:
-        return ServiceResult(AppException.DeleteTask(deleted_task))
+        return ServiceResult(AppException.FailedToDeleteTask(deleted_task))
     result = ServiceResult(deleted_task.model_dump())
-    return result
+    return handle_response(result)
 
 
 @task_api.get("/search_by_criteria/")
@@ -111,9 +104,9 @@ async def get_all_tasks(
     is_success, tasks = await get_task_by_criteria_service(db_session, criteria)
     tasks_list = [task.model_dump() for task in tasks]
     if not is_success:
-        return ServiceResult(AppException.GetTaskByCriteria(tasks_list))
+        return ServiceResult(AppException.FailedToGetTaskByCriteria(tasks_list))
     result = ServiceResult(tasks_list)
-    return handle_result(result)
+    return handle_response(result)
 
 
 @task_api.get("/history")
@@ -121,9 +114,9 @@ async def get_all_tasks_history(db_session=Depends(db.get_db)):
     is_success, tasks_history = await get_task_history_service(db_session)
     tasks_history_list = [task_history.model_dump() for task_history in tasks_history]
     if not is_success:
-        return ServiceResult(AppException.GetAllTaskHistory(tasks_history_list))
+        return ServiceResult(AppException.FailedToGetAllTaskHistory(tasks_history_list))
     result = ServiceResult(tasks_history_list)
-    return handle_result(result)
+    return handle_response(result)
 
 
 @task_api.get("/undo")
@@ -139,8 +132,8 @@ async def undo_last_action(
     task_history = tasks_history[0]
     is_success, updated_task_history = await update_history_task_service(db_session, task_history, is_archived=True)
     if not is_undo_success:
-        return ServiceResult(AppException.UndoLastAction(updated_task_history))
+        return ServiceResult(AppException.FailedToUndoLastAction(updated_task_history))
     result = ServiceResult(updated_task_history.model_dump())
-    return handle_result(result)
+    return handle_response(result)
 
 

@@ -45,7 +45,7 @@ def caller_info() -> str:
     return f"{info.filename}:{info.function}:{info.lineno}"
 
 
-def handle_result(result: ServiceResult):
+def handle_response(result: ServiceResult):
     if not result.success:
         with result as exception:
             logger.error(f"{exception} | caller={caller_info()}")
