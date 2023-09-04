@@ -1,10 +1,4 @@
-from fastapi import Request
 from starlette.responses import JSONResponse
-from models.responses.create_item import CreateItemResponse
-from models.responses.update_item import UpdateItemResponse
-from models.responses.get_all import GetAllItemResponse
-from models.responses.delete_item import DeleteItemResponse
-from models.responses.get_all_history import GetAllHistoryResponse
 
 
 class AppExceptionCase(Exception):
@@ -31,56 +25,56 @@ async def app_exception_handler(exc: AppExceptionCase):
 
 
 class AppException(object):
-    class GetAllTask(AppExceptionCase):
-        def __init__(self, context: [GetAllItemResponse] = None):
+    class FailedToGetAllTask(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Tasks not found
             """
             status_code = 10001
             AppExceptionCase.__init__(self, status_code, context)
 
-    class CreateTask(AppExceptionCase):
-        def __init__(self, context: CreateItemResponse = None):
+    class FailedToCreateTask(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Failed to create task
             """
             status_code = 10002
             AppExceptionCase.__init__(self, status_code, context)
 
-    class UpdateTask(AppExceptionCase):
-        def __init__(self, context: UpdateItemResponse = None):
+    class FailedToUpdateTask(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Failed to update task
             """
             status_code = 10003
             AppExceptionCase.__init__(self, status_code, context)
 
-    class DeleteTask(AppExceptionCase):
-        def __init__(self, context: DeleteItemResponse = None):
+    class FailedToDeleteTask(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Failed to delete task
             """
             status_code = 10004
             AppExceptionCase.__init__(self, status_code, context)
 
-    class GetTaskByCriteria(AppExceptionCase):
-        def __init__(self, context: [GetAllItemResponse] = None):
+    class FailedToGetTaskByCriteria(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Task not found
             """
             status_code = 10005
             AppExceptionCase.__init__(self, status_code, context)
 
-    class GetAllTaskHistory(AppExceptionCase):
-        def __init__(self, context: [GetAllHistoryResponse] = None):
+    class FailedToGetAllTaskHistory(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Tasks history not found
             """
             status_code = 10006
             AppExceptionCase.__init__(self, status_code, context)
 
-    class UndoLastAction(AppExceptionCase):
-        def __init__(self, context: GetAllHistoryResponse = None):
+    class FailedToUndoLastAction(AppExceptionCase):
+        def __init__(self, context: any = None):
             """
             Failed to undo action
             """
