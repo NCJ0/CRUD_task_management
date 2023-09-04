@@ -71,8 +71,10 @@ class TaskHistory(Base):
 
     @classmethod
     async def get(cls, db, criteria: TaskHistorySearchByCriteriaSchema) -> list["TaskHistory"]:
+        print('criteria', criteria)
         query = sql.select(cls)
         query = _filter_by_criteria(cls, query, criteria)
+        print(query)
         query = query.order_by(desc(cls.logged_at)).limit(10)
         tasks = await db.execute(query)
         tasks = tasks.scalars().all()
@@ -120,6 +122,6 @@ def _filter_by_criteria(cls, query, criteria: TaskHistorySearchByCriteriaSchema)
         query = query.filter(cls.action_type == criteria.action_type)
     if criteria.logged_at:
         query = query.filter(cls.logged_at == criteria.logged_at)
-    if criteria.is_archived:
+    if criteria.is_archived is not None:
         query = query.filter(cls.is_archived == criteria.is_archived)
     return query

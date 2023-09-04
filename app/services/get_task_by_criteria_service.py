@@ -4,9 +4,6 @@ from models.task import Task
 
 from models.responses.get_all import GetAllItemResponse
 
-from utils.app_exceptions import AppException
-from utils.service_result import ServiceResult
-
 
 async def get_task_by_criteria_service(db_session, criteria: TaskSearchByCriteriaSchema):
     tasks = await Task.get(db_session, criteria)

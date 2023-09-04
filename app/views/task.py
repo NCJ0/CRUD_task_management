@@ -130,10 +130,11 @@ async def undo_last_action(
     _, tasks_history = await get_task_history_by_criteria_service(db_session, criteria)
     is_undo_success, is_undo_log_success = await undo_task_action(db_session, tasks_history)
     task_history = tasks_history[0]
-    is_success, updated_task_history = await update_history_task_service(db_session, task_history, is_archived=True)
+    if is_undo_success and is_undo_log_success:
+        await update_history_task_service(db_session, task_history, is_archived=True) # save log result via pub/sub
     if not is_undo_success:
-        return ServiceResult(AppException.FailedToUndoLastAction(updated_task_history))
-    result = ServiceResult(updated_task_history.model_dump())
+        return ServiceResult(AppException.FailedToUndoLastAction(task_history))
+    result = ServiceResult(task_history.model_dump())
     return handle_response(result)
 
 

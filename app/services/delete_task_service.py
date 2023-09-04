@@ -2,9 +2,6 @@ from models.task import Task
 
 from models.responses.delete_item import DeleteItemResponse
 
-from utils.app_exceptions import AppException
-from utils.service_result import ServiceResult
-
 
 async def delete_task_service(db_session, task_id: str):
     is_delete_success = await Task.delete(db_session, task_id)
