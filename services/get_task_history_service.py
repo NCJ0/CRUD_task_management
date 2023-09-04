@@ -21,7 +21,7 @@ async def get_task_history_service(db_session):
             updated_by=task.updated_by,
             logged_at=task.logged_at,
             is_archived=task.is_archived
-        ).model_dump() for task in tasks]
+        ) for task in tasks]
         is_success = True
     else:
         tasks_history_list = tasks

@@ -21,15 +21,16 @@ from schemas.task_history_search_by_criteria import TaskHistorySearchByCriteriaS
 from utils.app_exceptions import AppException
 from utils.service_result import ServiceResult
 from utils.service_result import handle_result
-from constants.action_type import ActionType
+from constants.action_type_constant import ActionType
 
 from services.update_task_service import update_task_service
 from services.delete_task_service import delete_task_service
 from services.get_task_by_criteria_service import get_task_by_criteria_service
 from services.create_task_service import create_task_service
-from services.get_task_history import get_task_history_service
+from services.get_task_history_service import get_task_history_service
 from services.get_task_history_by_criteria_service import get_task_history_by_criteria_service
 from services.update_task_history_service import update_history_task_service
+from services.get_all_task_service import get_all_task_service
 
 task_api = APIRouter(
     prefix="/v1/tasks",
@@ -40,21 +41,10 @@ task_api = APIRouter(
 
 @task_api.get("/")
 async def get_all_tasks(db_session=Depends(db.get_db)):
-    tasks = await Task.get_all(db_session)
-    tasks_list = [GetAllItemResponse(
-        task_id=task.task_id,
-        user_id=task.user_id,
-        title=task.title,
-        description=task.description,
-        due_date=task.due_date,
-        status=task.status,
-        created_at=task.created_at,
-        created_by=task.created_by,
-        updated_at=task.updated_at,
-        updated_by=task.updated_by
-    ).model_dump() for task in tasks]
+    is_success, tasks = await get_all_task_service(db_session)
+    tasks_list = [task.model_dump() for task in tasks]
     if not tasks:
-        return ServiceResult(AppException.GetAllTask(tasks))
+        return ServiceResult(AppException.GetAllTask(tasks_list))
     result = ServiceResult(tasks_list)
     return handle_result(result)
 
@@ -74,10 +64,10 @@ async def create_task(
 
 @task_api.patch("/")
 async def patch_task(
-        task_id: str,
         task: TaskUpdateSchema,
         db_session=Depends(db.get_db)
 ):
+    task_id = task.task_id
     await post_task_history_service(db_session, task_id, ActionType.UPDATE)
     is_success, updated_task = await update_task_service(db_session, task)
     if not is_success:
@@ -95,7 +85,7 @@ async def delete_task(
     is_delete_success, deleted_task = await delete_task_service(db_session, task_id)
     if not is_delete_success:
         return ServiceResult(AppException.DeleteTask(deleted_task))
-    result = ServiceResult(delete_task.model_dump())
+    result = ServiceResult(deleted_task.model_dump())
     return result
 
 
@@ -119,15 +109,17 @@ async def get_all_tasks(
         updated_by=updated_by
     )
     is_success, tasks = await get_task_by_criteria_service(db_session, criteria)
+    tasks_list = [task.model_dump() for task in tasks]
     if not is_success:
-        return ServiceResult(AppException.GetTaskByCriteria(tasks))
-    result = ServiceResult(tasks)
+        return ServiceResult(AppException.GetTaskByCriteria(tasks_list))
+    result = ServiceResult(tasks_list)
     return handle_result(result)
 
 
 @task_api.get("/history")
 async def get_all_tasks_history(db_session=Depends(db.get_db)):
-    is_success, tasks_history_list = get_task_history_service(db_session)
+    is_success, tasks_history = await get_task_history_service(db_session)
+    tasks_history_list = [task_history.model_dump() for task_history in tasks_history]
     if not is_success:
         return ServiceResult(AppException.GetAllTaskHistory(tasks_history_list))
     result = ServiceResult(tasks_history_list)
@@ -142,11 +134,13 @@ async def undo_last_action(
         user_id=user_id,
         is_archived=False
     )
-    tasks_history = await get_task_history_by_criteria_service(db_session, criteria)
-    is_success, updated_task_history = await update_history_task_service(db_session, tasks_history, is_archived=True)
-    if not is_success:
+    _, tasks_history = await get_task_history_by_criteria_service(db_session, criteria)
+    is_undo_success, is_undo_log_success = await undo_task_action(db_session, tasks_history)
+    task_history = tasks_history[0]
+    is_success, updated_task_history = await update_history_task_service(db_session, task_history, is_archived=True)
+    if not is_undo_success:
         return ServiceResult(AppException.UndoLastAction(updated_task_history))
-    result = ServiceResult(updated_task_history)
+    result = ServiceResult(updated_task_history.model_dump())
     return handle_result(result)
 
 

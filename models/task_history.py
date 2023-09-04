@@ -56,6 +56,7 @@ class TaskHistory(Base):
         await db.commit()
         return tasks.first()
 
+    @classmethod
     async def update(cls, db, task_history_id, **kwargs) -> "TaskHistory":
         query = (
             sql.update(cls)

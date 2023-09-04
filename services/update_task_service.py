@@ -6,8 +6,7 @@ from models.responses.update_item import UpdateItemResponse
 
 
 async def update_task_service(db_session, task: TaskUpdateSchema):
-    task_id = task.task_id
-    new_task = await Task.update(db_session, task_id, **task.model_dump())
+    new_task = await Task.update(db_session, **task.model_dump())
     if new_task:
         updated_task = UpdateItemResponse(
             task_id=new_task.task_id,
