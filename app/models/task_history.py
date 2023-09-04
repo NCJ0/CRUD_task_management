@@ -71,10 +71,8 @@ class TaskHistory(Base):
 
     @classmethod
     async def get(cls, db, criteria: TaskHistorySearchByCriteriaSchema) -> list["TaskHistory"]:
-        print('criteria', criteria)
         query = sql.select(cls)
         query = _filter_by_criteria(cls, query, criteria)
-        print(query)
         query = query.order_by(desc(cls.logged_at)).limit(10)
         tasks = await db.execute(query)
         tasks = tasks.scalars().all()
