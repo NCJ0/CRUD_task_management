@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from models import task
+from models import task_history
 from config.config import Config
 
 # this is the Alembic Config object, which provides

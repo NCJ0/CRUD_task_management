@@ -1,10 +1,10 @@
 from pydantic import BaseModel, field_validator
 from datetime import datetime
 from typing import Optional
-from constants.schema.status import Status
 
 
 class TaskUpdateSchema(BaseModel):
+    task_id: str
     user_id: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None

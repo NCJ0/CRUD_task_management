@@ -3,19 +3,16 @@ from datetime import datetime
 from typing import Optional
 
 
-class TaskCreateSchema(BaseModel):
+class TaskLogSchema(BaseModel):
     user_id: Optional[str] = ""
-    title: str
+    title: Optional[str] = ""
     description: Optional[str] = ""
-    due_date: datetime
+    due_date: Optional[datetime]
     status: Optional[str] = ""
-    created_by: str
-
-    @field_validator('due_date', mode="before")
-    def string_due_date_to_datetime(cls, v: object) -> object:
-        if isinstance(v, str):
-            return datetime.strptime(v, "%Y-%m-%dT%H:%M:%S")
-        return v
+    created_at: Optional[datetime]
+    created_by: Optional[str] = ""
+    updated_at: Optional[datetime]
+    updated_by: Optional[str] = ""
 
     class Config:
         from_attributes = True
