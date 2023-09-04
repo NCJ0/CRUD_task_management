@@ -60,7 +60,7 @@ class AppException(object):
     class FailedToGetTaskByCriteria(AppExceptionCase):
         def __init__(self, context: any = None):
             """
-            Task not found
+            Task not match by criteria
             """
             status_code = 10005
             AppExceptionCase.__init__(self, status_code, context)

@@ -82,7 +82,7 @@ async def delete_task(
     return handle_response(result)
 
 
-@task_api.get("/search_by_criteria/")
+@task_api.get("/search_by_criteria")
 async def get_all_tasks(
         task_id: Optional[str] = None,
         title: Optional[str] = None,
@@ -119,7 +119,7 @@ async def get_all_tasks_history(db_session=Depends(db.get_db)):
     return handle_response(result)
 
 
-@task_api.get("/undo")
+@task_api.patch("/undo")
 async def undo_last_action(
         user_id: str,
         db_session=Depends(db.get_db)):
